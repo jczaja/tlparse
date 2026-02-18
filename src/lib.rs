@@ -1185,6 +1185,30 @@ pub fn parse_path(path: &PathBuf, config: &ParseConfig) -> anyhow::Result<ParseO
     ));
 
     // Generate traditional tlparse index
+    // Extract milestones (e.g., "Warmup End") from Chromium events if present
+    let milestones: Vec<crate::types::Milestone> = chromium_events
+        .iter()
+        .filter_map(|ev| {
+            let obj = ev.as_object()?;
+            let name = obj.get("name")?.as_str()?;
+            if name == "Warmup End" {
+                // ts is typically in microseconds in Chromium trace events
+                let ts_us = obj
+                    .get("ts")
+                    .and_then(|v| v.as_f64())
+                    .or_else(|| obj.get("ts").and_then(|v| v.as_i64()).map(|x| x as f64))
+                    .unwrap_or(0.0);
+                let ts_ms = ts_us / 1000.0;
+                Some(crate::types::Milestone {
+                    name: name.to_string(),
+                    timestamp: format!("{:.3} ms", ts_ms),
+                })
+            } else {
+                None
+            }
+        })
+        .collect();
+
     let index_context = IndexContext {
         css: CSS,
         javascript: JAVASCRIPT,
@@ -1205,6 +1229,7 @@ pub fn parse_path(path: &PathBuf, config: &ParseConfig) -> anyhow::Result<ParseO
         qps: TEMPLATE_QUERY_PARAM_SCRIPT,
         has_inductor_provenance: config.inductor_provenance,
         directory_names: directory_names.clone(),
+        milestones,
     };
     let tlparse_index_html = tt.render("index.html", &index_context)?;
 

@@ -885,6 +885,12 @@ pub struct DynamoGuardsContext {
 }
 
 #[derive(Debug, Serialize)]
+pub struct Milestone {
+    pub name: String,
+    pub timestamp: String,
+}
+
+#[derive(Debug, Serialize)]
 pub struct IndexContext {
     pub css: &'static str,
     pub javascript: &'static str,
@@ -898,6 +904,7 @@ pub struct IndexContext {
     pub qps: &'static str,
     pub has_inductor_provenance: bool,
     pub directory_names: Vec<String>,
+    pub milestones: Vec<Milestone>,
 }
 
 #[derive(Debug, Serialize)]

@@ -184,6 +184,17 @@ phase generates:
 PT2 generates <a href='chromium_events.json'>Chromium Trace Events</a> in JSON on specific events during compilation.
 You can download and view them in a tool like <a href='https://ui.perfetto.dev/'>Perfetto</a>.
 {{ endif  }}
+
+{{ if milestones }}
+<h2> Milestones </h2>
+<p>Detected notable events from Chromium trace:</p>
+<ul>
+  {{ for m in milestones }}
+    <li><strong>{m.name}</strong> at {m.timestamp}</li>
+  {{ endfor }}
+</ul>
+{{ endif }}
+
 <p>
 <a href="collectives_parity.json">Collectives Parity report</a> comparing scheduler and Inductor output code collective operations.
 </p>
