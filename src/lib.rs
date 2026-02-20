@@ -1191,7 +1191,7 @@ pub fn parse_path(path: &PathBuf, config: &ParseConfig) -> anyhow::Result<ParseO
         .filter_map(|ev| {
             let obj = ev.as_object()?;
             let name = obj.get("name")?.as_str()?;
-            if name == "Warmup End" {
+            if name.contains("vLLM: ") {
                 // ts is typically in microseconds in Chromium trace events
                 let ts_us = obj
                     .get("ts")
